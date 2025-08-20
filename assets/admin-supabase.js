@@ -2,6 +2,14 @@
 const ADMIN = (function(){
   let session = null;
 
+  // Sayfalama durumu
+  const restPager = {
+    page: 1,
+    pageSize: 25,
+    total: 0,
+    search: ''
+  };
+
   async function requireAuth(){
     const { data: { session: s } } = await sb.auth.getSession();
     session = s;
@@ -55,8 +63,6 @@ const ADMIN = (function(){
       await sb.auth.signOut();
       session = null;
       renderAuthUI();
-      // İstersen anasayfaya yönlendirebilirsin:
-      // location.replace('index.html');
     });
   }
 
@@ -64,18 +70,36 @@ const ADMIN = (function(){
     await Promise.all([renderCerts(), renderRestaurants(), renderPublicCertTable()]);
   }
 
+  // === Restoran listesi (arama + sayfalama) ===
   async function renderRestaurants(){
     const tbody = document.getElementById('adminRestTableBody');
     if(!tbody) return;
-    const { data, error } = await sb
-      .from('restaurants')
-      .select('id,name,address,cuisines,website,phone,coords')
-      .order('name');
+
+    const { page, pageSize, search } = restPager;
+    const from = (page - 1) * pageSize;
+    const to   = from + pageSize - 1;
+
+    let q = sb.from('restaurants')
+      .select('id,name,address,cuisines,website,phone,coords', { count: 'exact' })
+      .order('name', { ascending: true });
+
+    if(search && search.trim()){
+      const term = `%${search.trim()}%`;
+      // name OR address OR website içinde arama
+      q = q.or(`name.ilike.${term},address.ilike.${term},website.ilike.${term}`);
+    }
+
+    const { data, error, count } = await q.range(from, to);
+
     if(error){
-      tbody.innerHTML = `<tr><td colspan="5">Hata: ${error.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4">Hata: ${error.message}</td></tr>`;
+      updatePagerUI(0);
       return;
     }
+
+    restPager.total = count || 0;
     tbody.innerHTML = '';
+
     (data||[]).forEach((r)=>{
       const lat = r.coords?.coordinates?.[1];
       const lng = r.coords?.coordinates?.[0];
@@ -87,8 +111,68 @@ const ADMIN = (function(){
         <td><button data-edit="${r.id}">Düzenle</button> <button data-del="${r.id}">Sil</button></td>`;
       tbody.appendChild(tr);
     });
+
+    updatePagerUI(restPager.total, data?.length ?? 0, from, to);
   }
 
+  function updatePagerUI(total=0, pageCount=0, from=0, to=0){
+    const infoEl = document.getElementById('restPageInfo');
+    const prevBtn = document.getElementById('restPrev');
+    const nextBtn = document.getElementById('restNext');
+
+    const shownTo = Math.min(total, to + 1);
+    const shownFrom = total ? (from + 1) : 0;
+
+    infoEl.textContent = total
+      ? `${shownFrom}–${shownTo} / ${total} — Sayfa ${restPager.page}`
+      : `0 sonuç`;
+
+    prevBtn.disabled = restPager.page <= 1;
+    const maxPage = Math.max(1, Math.ceil((total||0)/restPager.pageSize));
+    nextBtn.disabled = restPager.page >= maxPage;
+  }
+
+  function bindPager(){
+    const search = document.getElementById('restSearch');
+    const pageSizeSel = document.getElementById('restPageSize');
+    const prev = document.getElementById('restPrev');
+    const next = document.getElementById('restNext');
+
+    let t = null;
+    search?.addEventListener('input', ()=>{
+      clearTimeout(t);
+      t = setTimeout(()=>{
+        restPager.search = search.value || '';
+        restPager.page = 1;
+        renderRestaurants();
+      }, 300);
+    });
+
+    pageSizeSel?.addEventListener('change', ()=>{
+      restPager.pageSize = Number(pageSizeSel.value) || 25;
+      restPager.page = 1;
+      renderRestaurants();
+    });
+
+    prev?.addEventListener('click', ()=>{
+      if(restPager.page > 1){
+        restPager.page--;
+        renderRestaurants();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+
+    next?.addEventListener('click', ()=>{
+      const maxPage = Math.max(1, Math.ceil((restPager.total||0)/restPager.pageSize));
+      if(restPager.page < maxPage){
+        restPager.page++;
+        renderRestaurants();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  // === Sertifika kurumları ===
   async function renderCerts(){
     const tbody = document.getElementById('adminCertTableBody');
     if(!tbody) return;
@@ -125,8 +209,8 @@ const ADMIN = (function(){
     dl.innerHTML = '';
     (certs||[]).forEach(c=>{
       const o=document.createElement('option');
-      o.value = c.id;     // formda bodyId olarak kullanılacak
-      o.label = c.body;   // kullanıcı label olarak kurum adını görür
+      o.value = c.id;   // bodyId olarak kullanılacak
+      o.label = c.body; // kullanıcı kurum adını görür
       dl.appendChild(o);
     });
   }
@@ -143,7 +227,7 @@ const ADMIN = (function(){
         if(confirm('Silinsin mi?')){
           const { error } = await sb.from('restaurants').delete().eq('id', t.dataset.del);
           if(error) alert(error.message);
-          await loadAll();
+          await renderRestaurants();
         }
       }
     });
@@ -156,7 +240,7 @@ const ADMIN = (function(){
         if(confirm('Silinsin mi?')){
           const { error } = await sb.from('cert_bodies').delete().eq('id', t.dataset.delc);
           if(error) alert(error.message);
-          await loadAll();
+          await renderCerts();
         }
       }
     });
@@ -241,7 +325,7 @@ const ADMIN = (function(){
       // temizlik
       cancelBtn?.click?.();
       restForm.reset();
-      await loadAll();
+      await renderRestaurants();
       alert('Kaydedildi.');
     });
 
@@ -275,12 +359,10 @@ const ADMIN = (function(){
       f.elements['website'].value  = rds.website||'';
       f.elements['phone'].value    = rds.phone||'';
 
-      // saat alanı formda varsa doldur
       if (f.elements['hours']) {
         f.elements['hours'].value = rds.hours ? JSON.stringify(rds.hours) : '';
       }
 
-      // sertifika alanları
       f.elements['status'].value       = cert?.status || 'unknown';
       f.elements['body'].value         = cert?.cert_body_id || '';
       f.elements['score'].value        = cert?.score || '';
@@ -314,7 +396,7 @@ const ADMIN = (function(){
       if(res.error){ alert(res.error.message); return; }
       certCancel?.click?.();
       certForm.reset();
-      await loadAll();
+      await renderCerts();
       alert('Kaydedildi.');
     });
 
@@ -331,7 +413,7 @@ const ADMIN = (function(){
   }
 
   document.addEventListener('DOMContentLoaded', async ()=>{
-    bindAuth(); bindTables(); bindForms();
+    bindAuth(); bindTables(); bindForms(); bindPager();
     if(await requireAuth()){ await loadAll(); }
   });
 
