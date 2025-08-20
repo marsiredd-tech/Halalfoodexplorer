@@ -3,62 +3,80 @@
 <head>
   <title>İletişim — HelalRestoran</title>
   <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
-<meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
-<meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
-<meta property="og:type" content="website" />
-<meta property="og:locale" content="tr_TR" />
-<link rel="icon" href="assets/logo.svg" />
-<link rel="stylesheet" href="assets/styles.css" />
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
+  <meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
+  <meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="tr_TR" />
+  <link rel="icon" href="assets/logo.svg" />
+  <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <header class="site-header">
-  <a class="skip" href="#icerik">İçeriğe atla</a>
-  <div class="container nav">
-    <div class="brand">
-      <img src="assets/logo.svg" alt="HelalRestoran logo" width="28" height="28" />
-      <span>HelalRestoran</span>
+    <a class="skip" href="#icerik">İçeriğe atla</a>
+    <div class="container nav">
+      <div class="brand">
+        <img src="assets/logo.svg" alt="HelalRestoran logo" width="28" height="28" />
+        <span>HelalRestoran</span>
+      </div>
+      <nav class="menu" aria-label="Ana menü">
+        <a href="index.html">Anasayfa</a>
+        <a href="restaurants.html">Restoran Bul</a>
+        <a href="certifications.html">Sertifikalar</a>
+        <a href="news.html">Haberler</a>
+        <a href="about.html">Hakkımızda</a>
+        <a href="contact.html">İletişim</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="admin.html" class="admin-link">Admin</a>
+      </nav>
     </div>
-    <nav class="menu" aria-label="Ana menü">
-      <a href="index.html">Anasayfa</a>
-      <a href="restaurants.html">Restoran Bul</a>
-      <a href="certifications.html">Sertifikalar</a>
-      <a href="news.html">Haberler</a>
-      <a href="about.html">Hakkımızda</a>
-      <a href="contact.html">İletişim</a>
-      <a href="impressum.html">Impressum</a>
-      <a href="datenschutz.html">Datenschutz</a>
-      <a href="admin.html" class="admin-link">Admin</a>
-    </nav>
-  </div>
-</header>
+  </header>
 
   <main id="icerik">
     <section class="container hero">
-  <h1>İletişim</h1>
-  <p class="muted">Bir öneriniz veya işletme ekleme talebiniz mi var?</p>
-</section>
-<section class="container section card">
-  <form action="mailto:ornek@alanadiniz.com" method="post" enctype="text/plain">
-    <label>Ad Soyad<br><input name="ad" placeholder="Adınız Soyadınız" required/></label><br>
-    <label>E-posta<br><input type="email" name="email" placeholder="mail@ornek.com" required/></label><br>
-    <label>Mesaj<br><textarea name="mesaj" rows="5" placeholder="Merhaba..." required></textarea></label><br>
-    <button class="btn" type="submit">Gönder</button>
-  </form>
-  <p class="muted small">Not: Canlı kullanımda profesyonel form/anti-spam çözümü önerilir (ör. Netlify Forms).</p>
-</section>
+      <h1>İletişim</h1>
+      <p class="muted">Bir öneriniz veya işletme ekleme talebiniz mi var?</p>
+    </section>
 
+    <section class="container section card">
+      <!-- Netlify Forms: mailto yerine POST + data-netlify -->
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <!-- Netlify'in formu tanıması için gerekli -->
+        <input type="hidden" name="form-name" value="contact" />
+
+        <!-- Honeypot (spamlere karşı) -->
+        <p class="hidden" style="position:absolute;left:-9999px;opacity:0;">
+          <label>Bot değil misin? <input name="bot-field" /></label>
+        </p>
+
+        <label>Ad Soyad<br>
+          <input name="ad" placeholder="Adınız Soyadınız" required />
+        </label><br>
+
+        <label>E-posta<br>
+          <input type="email" name="email" placeholder="mail@ornek.com" required />
+        </label><br>
+
+        <label>Mesaj<br>
+          <textarea name="mesaj" rows="5" placeholder="Merhaba..." required></textarea>
+        </label><br>
+
+        <button class="btn" type="submit">Gönder</button>
+      </form>
+
+      <p class="muted small">
+        Form gönderimleriniz Netlify Forms üzerinden toplanır. Netlify panelinizde “Forms” bölümünden görüntüleyebilirsiniz.
+      </p>
+    </section>
   </main>
-  <footer class="site-footer">
-  <div class="container">
-    <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
-  </div>
-</footer>
-<script src="assets/app.js"></script>
 
-  
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+    </div>
+  </footer>
+  <script src="assets/app.js"></script>
 </body>
 </html>
