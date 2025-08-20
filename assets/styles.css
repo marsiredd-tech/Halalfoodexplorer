@@ -41,3 +41,74 @@ label{font-weight:600}
 .item{background:#0f1218;border:1px solid #2a2f3d;border-radius:14px;padding:12px}
 .admin-link{font-weight:700}
 .small{font-size:.9em}
+/* === Mobil Uyum Eklentileri === */
+
+/* Akışkan tipografi ve temel düzen */
+:root{
+  --container-px: 16px;
+  --header-h: 56px;
+}
+html, body { width:100%; overflow-x:hidden; }
+body { line-height: 1.6; }
+
+/* Görseller taşmasın */
+img, video { max-width:100%; height:auto; }
+
+/* Konteyner */
+.container{ width:100%; max-width:1100px; margin:0 auto; padding:0 var(--container-px); }
+
+/* Grid: masaüstü 2 sütun, mobil tek sütun */
+.grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+@media (max-width: 1024px){
+  .grid{ grid-template-columns: 1fr; }
+}
+
+/* Filtre çubuğu */
+.controls{ display:flex; flex-wrap:wrap; gap:8px; }
+.controls .badge{ display:flex; align-items:center; gap:8px; }
+.controls .badge input[type="text"],
+.controls .badge input[type="search"],
+.controls .badge select{ min-width:160px; }
+
+/* Buton ve dokunma hedefleri */
+.btn, .menu a, .table button{ min-height:44px; padding:10px 14px; }
+
+/* Harita yüksekliği – mobilde daha yüksek */
+#map{ height:420px; border-radius:16px; }
+@media (max-width: 768px){
+  #map{ height: 60vh; min-height: 320px; }
+}
+
+/* Tablo yatay taşma – admin ve listeler için */
+.card, .table-wrap { overflow-x:auto; }
+
+/* Header: mobil menü */
+.site-header{ position: sticky; top:0; z-index:10; background: var(--bg, #fff); }
+.nav{ display:flex; align-items:center; gap:12px; min-height: var(--header-h); }
+.brand{ display:flex; align-items:center; gap:8px; }
+.menu{ display:flex; align-items:center; gap:12px; margin-left:auto; }
+
+.menu-toggle{ display:none; border:0; background:transparent; font-size:24px; line-height:1; padding:8px; }
+@media (max-width: 768px){
+  .menu-toggle{ display:block; }
+  .menu{
+    position:absolute; left:16px; right:16px; top:calc(var(--header-h) - 6px);
+    display:none; flex-direction:column; align-items:flex-start; gap:6px;
+    background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08);
+  }
+  .menu.open{ display:flex; }
+}
+
+/* Küçük ekranlarda form alanları tam genişlik */
+@media (max-width: 480px){
+  .controls .badge input,
+  .controls .badge select{ width:100%; }
+}
+
+/* (İsteğe bağlı) Karanlık mod uyumu */
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0b0f14; }
+  body{ background:#0b0f14; color:#e5e7eb; }
+  .card, .menu{ background:#0f141b; border-color:#1f2937; }
+}
