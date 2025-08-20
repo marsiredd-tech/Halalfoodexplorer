@@ -31,7 +31,15 @@
       <img src="assets/logo.svg" alt="HelalRestoran logo" width="28" height="28" />
       <span>HelalRestoran</span>
     </div>
-    <nav class="menu" aria-label="Ana menü">
+
+    <!-- Mobil menü düğmesi -->
+    <button class="menu-toggle" id="menuToggle"
+            aria-expanded="false"
+            aria-controls="siteMenu"
+            aria-label="Menüyü aç/kapat">☰</button>
+
+    <!-- Menü -->
+    <nav id="siteMenu" class="menu" aria-label="Ana menü">
       <a href="index.html">Anasayfa</a>
       <a href="restaurants.html">Restoran Bul</a>
       <a href="certifications.html">Sertifikalar</a>
@@ -44,6 +52,7 @@
     </nav>
   </div>
 </header>
+
 
 <main id="icerik">
   <section class="container hero">
