@@ -10,13 +10,17 @@ const ADMIN = (function(){
     return true;
   }
 
-  function renderAuthUI(){
-    const authed = !!session;
-    document.getElementById('authBox').style.display = authed ? 'none' : 'block';
-    document.getElementById('adminBox').style.display = authed ? 'block' : 'none';
-    const emailOut = document.getElementById('whoami');
-    if(authed && emailOut){ sb.auth.getUser().then(({data})=>{ emailOut.textContent = data.user?.email || ''; }); }
-  }
+function renderAuthUI(){
+  const authed = !!session;
+  document.getElementById('authBox').style.display = authed ? 'none' : 'block';
+  document.getElementById('adminBox').style.display = authed ? 'block' : 'none';
+  document.querySelectorAll('.requires-auth').forEach(el => {
+    el.style.display = authed ? '' : 'none';
+  });
+  const emailOut = document.getElementById('whoami');
+  if(authed && emailOut){ sb.auth.getUser().then(({data})=>{ emailOut.textContent = data.user?.email || ''; }); }
+}
+
 
   function bindAuth(){
     const signInForm = document.getElementById('signInForm');
