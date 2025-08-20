@@ -127,6 +127,11 @@ function renderAuthUI(){
       const id = fd.get('id') || null;
       const name = fd.get('name'); const address = fd.get('address'); const website = fd.get('website'); const phone = fd.get('phone');
       const lat = parseFloat(fd.get('lat')); const lng = parseFloat(fd.get('lng'));
+      const certNumber = fd.get('certNumber')||null;
+const validFrom  = fd.get('validFrom')||null;
+const validTo    = fd.get('validTo')||null;
+const certUrl    = fd.get('certUrl')||null;
+
       const cuisinesRaw = (fd.get('cuisines')||'').toString(); const cuisines = cuisinesRaw? cuisinesRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
       const bodyId = fd.get('body'); const status = fd.get('status'); const score = Number(fd.get('score')||0); const lastVerified = fd.get('lastVerified')||null;
 
@@ -138,16 +143,22 @@ function renderAuthUI(){
       const rid = res.data[0].id;
 
       // Upsert certification (simple: one active cert per restaurant)
-      // delete existing then insert new
-      await sb.from('certifications').delete().eq('restaurant_id', rid);
-      if(bodyId || status){
-        const payload = { restaurant_id: rid, status };
-        if(bodyId) payload.cert_body_id = bodyId;
-        if(score) payload.score = score;
-        if(lastVerified) payload.last_verified = lastVerified;
-        const ins = await sb.from('certifications').insert(payload);
-        if(ins.error){ alert(ins.error.message); }
-      }
+await sb.from('certifications').delete().eq('restaurant_id', rid);
+
+if (bodyId || status || certNumber || validFrom || validTo || certUrl || score || lastVerified) {
+  const payload = { restaurant_id: rid, status };
+  if (bodyId)      payload.cert_body_id   = bodyId;
+  if (score)       payload.score          = score;
+  if (lastVerified)payload.last_verified  = lastVerified;
+  if (certNumber)  payload.cert_number    = certNumber;
+  if (validFrom)   payload.valid_from     = validFrom;
+  if (validTo)     payload.valid_to       = validTo;
+  if (certUrl)     payload.cert_url       = certUrl;
+
+  const ins = await sb.from('certifications').insert(payload);
+  if (ins.error) { alert(ins.error.message); }
+}
+
 
       cancelBtn?.click?.();
       restForm.reset();
@@ -169,6 +180,10 @@ function renderAuthUI(){
       restForm.elements['cuisines'].value = (rds.cuisines||[]).join(', ');
       restForm.elements['status'].value = cert?.status||'unknown';
       restForm.elements['body'].value = cert?.cert_body_id||'';
+      restForm.elements['certNumber'].value = cert?.cert_number || '';
+restForm.elements['validFrom'].value  = cert?.valid_from  || '';
+restForm.elements['validTo'].value    = cert?.valid_to    || '';
+restForm.elements['certUrl'].value    = cert?.cert_url    || '';
       restForm.elements['score'].value = cert?.score||'';
       restForm.elements['lastVerified'].value = cert?.last_verified||'';
       restForm.elements['website'].value = rds.website||'';
