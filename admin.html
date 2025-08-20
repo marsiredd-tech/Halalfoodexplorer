@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr">
 <meta name="robots" content="noindex,nofollow">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/env.js"></script>
 
 <head>
+<meta name="robots" content="noindex,nofollow">
   <title>Admin — HelalRestoran</title>
   <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -57,14 +56,6 @@
   </div>
   <div id="adminBox" style="display:none">
     <p class="muted">Giriş yapıldı: <span id="whoami"></span> · <button class="btn" id="signOutBtn" style="background:#4a5060">Sign out</button></p>
-  </div>
-
-  <h1>Admin Panel</h1>
-  <p class="muted">Bu panel demo içindir; veriler <strong>localStorage</strong>'a kaydedilir. Canlıda Auth + veritabanı kullanın.</p>
-  <div class="controls">
-    <button class="btn" id="btnExport">JSON Dışa Aktar</button>
-    <label class="badge">JSON İçe Aktar <input type="file" id="inputImport" accept="application/json"></label>
-    <button class="btn" id="btnReset">Demo Verisine Sıfırla</button>
   </div>
 </section>
 
