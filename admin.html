@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <meta name="robots" content="noindex,nofollow">
+<meta name="robots" content="noindex,nofollow">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/env.js"></script>
-<script>
-  // Sayfa açılır açılmaz: session yoksa ana sayfaya gönder
-  const sbGuard = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  sbGuard.auth.getSession().then(({ data: { session } }) => {
-    if (!session) location.replace('index.html?unauthorized=1');
-  });
-</script>
 
 <head>
   <title>Admin — HelalRestoran</title>
