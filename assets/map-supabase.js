@@ -24,7 +24,12 @@ const MAP = (function(){
     const radiusLabel = document.getElementById('radiusLabel');
     const onlyCertified = document.getElementById('onlyCertified');
     const btn = document.getElementById('btnFind');
+const openNow = document.getElementById('openNow');
+const certBodyFilter = document.getElementById('certBodyFilter');
     const statusEl = document.getElementById('status');
+    const cuisineFilter = document.getElementById('cuisineFilter');
+cuisineFilter?.addEventListener('change', ()=>{ if(state.center){ renderList(state.center); }});
+
     const listEl = document.getElementById('list');
     const statsEl = document.getElementById('resultStats');
 
