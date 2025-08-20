@@ -1,0 +1,148 @@
+{
+  "cert_bodies": [
+    {
+      "body": "DEMO-Halal",
+      "criteria": "Tedarik zinciri beyanı + tedarikçi belgeleri",
+      "audit": "Yıllık yerinde denetim",
+      "score": 85
+    },
+    {
+      "body": "Self-Declared",
+      "criteria": "İşletme kendi beyanı",
+      "audit": "Kanıt yükümlülüğü işletmede",
+      "score": 50
+    },
+    {
+      "body": "Unknown",
+      "criteria": "Bilinmiyor",
+      "audit": "—",
+      "score": 30
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "demo1",
+      "name": "Demo Halal Grill Neukölln",
+      "coords": {
+        "lat": 52.4791,
+        "lng": 13.4386
+      },
+      "address": "Sonnenallee 100, 12045 Berlin",
+      "cuisines": [
+        "Kebap",
+        "Izgara"
+      ],
+      "halal": {
+        "status": "certified",
+        "body": "DEMO-Halal",
+        "score": 88,
+        "lastVerified": "2025-07-01"
+      },
+      "website": "",
+      "phone": ""
+    },
+    {
+      "id": "demo2",
+      "name": "Mitte Curry House",
+      "coords": {
+        "lat": 52.5246,
+        "lng": 13.401
+      },
+      "address": "Torstraße 50, 10119 Berlin",
+      "cuisines": [
+        "Hint",
+        "Vegan seçenek"
+      ],
+      "halal": {
+        "status": "self-declared",
+        "body": "",
+        "score": 60,
+        "lastVerified": "2025-06-10"
+      },
+      "website": "",
+      "phone": ""
+    },
+    {
+      "id": "demo3",
+      "name": "Kreuzberg Doner Point",
+      "coords": {
+        "lat": 52.4964,
+        "lng": 13.4184
+      },
+      "address": "Oranienstraße 140, 10969 Berlin",
+      "cuisines": [
+        "Döner",
+        "Fast Food"
+      ],
+      "halal": {
+        "status": "unknown",
+        "body": "",
+        "score": 0,
+        "lastVerified": ""
+      },
+      "website": "",
+      "phone": ""
+    },
+    {
+      "id": "demo4",
+      "name": "Wedding Halal Kitchen",
+      "coords": {
+        "lat": 52.5505,
+        "lng": 13.352
+      },
+      "address": "Müllerstraße 120, 13349 Berlin",
+      "cuisines": [
+        "Orta Doğu"
+      ],
+      "halal": {
+        "status": "certified",
+        "body": "DEMO-Halal",
+        "score": 92,
+        "lastVerified": "2025-05-20"
+      },
+      "website": "",
+      "phone": ""
+    },
+    {
+      "id": "demo5",
+      "name": "Charlottenburg Grill & More",
+      "coords": {
+        "lat": 52.5065,
+        "lng": 13.3031
+      },
+      "address": "Kurfürstendamm 200, 10719 Berlin",
+      "cuisines": [
+        "Grill",
+        "Burger"
+      ],
+      "halal": {
+        "status": "not-halal",
+        "body": "",
+        "score": 0,
+        "lastVerified": "2025-07-15"
+      },
+      "website": "",
+      "phone": ""
+    },
+    {
+      "id": "demo6",
+      "name": "Tempelhof Family Restaurant",
+      "coords": {
+        "lat": 52.468,
+        "lng": 13.385
+      },
+      "address": "Tempelhofer Damm 50, 12101 Berlin",
+      "cuisines": [
+        "Ev Yemekleri"
+      ],
+      "halal": {
+        "status": "self-declared",
+        "body": "",
+        "score": 55,
+        "lastVerified": "2025-05-28"
+      },
+      "website": "",
+      "phone": ""
+    }
+  ]
+}
