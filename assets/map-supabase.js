@@ -291,7 +291,14 @@ const MAP = (function(){
 
   async function init(){
     if(!window.sb){ console.error('Supabase client yok. assets/env.js dosyasını doldurun.'); return; }
-    const map = L.map('map', { zoomControl:true, attributionControl:true });
+    const map = L.map('map', {
+  zoomControl: true,
+  attributionControl: true,
+  scrollWheelZoom: false // mobil kaydırma ile çakışmasın
+});
+// Kullanıcı haritaya odaklanınca tekerlek zoomu aç/kapat
+map.on('focus', () => map.scrollWheelZoom.enable());
+map.on('blur',  () => map.scrollWheelZoom.disable());
     map.setView([state.center.lat, state.center.lng], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
