@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html lang="tr">
-<meta name="robots" content="noindex,nofollow">
-
 <head>
-<meta name="robots" content="noindex,nofollow">
+  <meta name="robots" content="noindex,nofollow">
   <title>Admin — HelalRestoran</title>
   <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
-<meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
-<meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
-<meta property="og:type" content="website" />
-<meta property="og:locale" content="tr_TR" />
-<link rel="icon" href="assets/logo.svg" />
-<link rel="stylesheet" href="assets/styles.css" />
-<!-- admin.html → <head> içine ekle -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/env.js"></script>
-<script>
-  // Giriş yoksa admin sayfasına erişimi engelle
-  const sbGuard = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  sbGuard.auth.getSession().then(({ data: { session } }) => {
-    if (!session) location.replace('index.html?unauthorized=1');
-  });
-</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
+  <meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
+  <meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="tr_TR" />
+  <link rel="icon" href="assets/logo.svg" />
+  <link rel="stylesheet" href="assets/styles.css" />
 
-  
+  <!-- Auth guard: login yoksa admin sayfasına erişimi engelle -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/env.js"></script>
+  <script>
+    const sbGuard = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    sbGuard.auth.getSession().then(({ data: { session } }) => {
+      if (!session) location.replace('index.html?unauthorized=1');
+    });
+  </script>
 </head>
 <body>
-  <header class="site-header">
+<header class="site-header">
   <a class="skip" href="#icerik">İçeriğe atla</a>
   <div class="container nav">
     <div class="brand">
@@ -49,39 +45,117 @@
   </div>
 </header>
 
-  <main id="icerik">
-    <section class="container hero">
-  <h1>Admin Panel</h1>
-  <div id="authBox" class="card" style="display:none">
-    <h2>Giriş</h2>
-    <p class="muted">Email/şifre ile giriş yapın. Bu emaili <code>admins</code> tablosuna eklemeden yazma izinleriniz olmayacaktır.</p>
-    <form id="signInForm" class="controls" style="flex-direction:column;align-items:flex-start">
-      <label>Email<br><input id="email" name="email" type="email" required placeholder="you@example.com"></label>
-      <label>Password<br><input id="password" name="password" type="password" required></label>
-      <div class="controls">
-        <button class="btn" type="submit">Sign in</button>
-        <button class="btn" type="button" id="signUpBtn" style="background:#4a5060">Sign up</button>
-      </div>
-    </form>
-  </div>
-  <div id="adminBox" style="display:none">
-    <p class="muted">Giriş yapıldı: <span id="whoami"></span> · <button class="btn" id="signOutBtn" style="background:#4a5060">Sign out</button></p>
-  </div>
-</section>
+<main id="icerik">
+  <section class="container hero">
+    <h1>Admin Panel</h1>
+    <div id="authBox" class="card" style="display:none">
+      <h2>Giriş</h2>
+      <p class="muted">Email/şifre ile giriş yapın. Bu emaili <code>admins</code> tablosuna eklemeden yazma izinleriniz olmayacaktır.</p>
+      <form id="signInForm" class="controls" style="flex-direction:column;align-items:flex-start">
+        <label>Email<br><input id="email" name="email" type="email" required placeholder="you@example.com"></label>
+        <label>Password<br><input id="password" name="password" type="password" required></label>
+        <div class="controls">
+          <button class="btn" type="submit">Sign in</button>
+          <button class="btn" type="button" id="signUpBtn" style="background:#4a5060">Sign up</button>
+        </div>
+      </form>
+    </div>
+    <div id="adminBox" style="display:none">
+      <p class="muted">Giriş yapıldı: <span id="whoami"></span> · <button class="btn" id="signOutBtn" style="background:#4a5060">Sign out</button></p>
+    </div>
+  </section>
 
-<section class="container section grid grid-2 requires-auth" style="display:none">
-  <div class="card">
-    <h2 id="restSection">Restoranlar</h2>
-    <table id="adminRestTable" class="table">
-      <thead><tr><th>Ad</th><th>Koordinat</th><th>Sertifika</th><th>Puan</th><th>İşlem</th></tr></thead>
-      <tbody id="adminRestTableBody"></tbody>
-    </table>
-    <div class="section"></div>
-    <h3>Ekle / Düzenle</h3>
-    <form id="restForm">
-      <!-- admin.html → #restForm içinde, butonların üstüne EKLE -->
-<label>Çalışma Saatleri (JSON)<br>
-  <textarea name="hours" rows="4" placeholder='{
+  <section class="container section grid grid-2 requires-auth" style="display:none">
+    <div class="card">
+      <h2 id="restSection">Restoranlar</h2>
+
+      <!-- Arama + sayfalama kontrolleri -->
+      <div class="controls" style="gap:8px; align-items:center; margin:8px 0;">
+        <label class="badge">Ara
+          <input id="restSearch" placeholder="Ad, adres veya website" style="min-width:260px">
+        </label>
+        <label class="badge">Sayfa boyutu
+          <select id="restPageSize">
+            <option>10</option>
+            <option selected>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </label>
+        <span class="muted small" id="restPageInfo"></span>
+        <span style="flex:1"></span>
+        <button class="btn" id="restPrev" type="button">◀ Önceki</button>
+        <button class="btn" id="restNext" type="button">Sonraki ▶</button>
+      </div>
+
+      <table id="adminRestTable" class="table">
+        <thead><tr><th>Ad</th><th>Koordinat</th><th>Adres</th><th>İşlem</th></tr></thead>
+        <tbody id="adminRestTableBody"></tbody>
+      </table>
+
+      <!-- (Aynı kontrolleri altta da göstermek istersen kopyalayabilirsin) -->
+    </div>
+
+    <div class="card">
+      <h2 id="certSection">Sertifika Kurumları</h2>
+      <table id="adminCertTable" class="table">
+        <thead><tr><th>Ad</th><th>Kriter</th><th>Denetim</th><th>Puan</th><th>İşlem</th></tr></thead>
+        <tbody id="adminCertTableBody"></tbody>
+      </table>
+      <div class="section"></div>
+      <h3>Ekle / Düzenle</h3>
+      <form id="certForm">
+        <input type="hidden" name="id">
+        <label>Ad (Kurum)<br><input name="body" required placeholder="DEMO-Halal"></label><br>
+        <label>Kriterler<br><input name="criteria" placeholder="Örn: Tedarik zinciri beyanı"></label><br>
+        <label>Denetim Sıklığı<br><input name="audit" placeholder="Örn: Yıllık yerinde denetim"></label><br>
+        <label>Puan (0–100)<br><input name="score" type="number" min="0" max="100" style="width:120px"></label><br>
+        <div class="controls">
+          <button class="btn" type="submit">Kaydet</button>
+          <button type="button" id="certFormCancel" class="btn" style="background:#4a5060">İptal</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Ekle / Düzenle (Restoran)</h3>
+      <form id="restForm">
+        <input type="hidden" name="id">
+        <label>Ad<br><input name="name" required></label><br>
+        <label>Adres<br><input name="address" placeholder="Cadde, No, Şehir"></label><br>
+        <div class="controls" style="padding:8px 0">
+          <label class="badge">Lat <input name="lat" type="number" step="0.000001" required style="width:120px"></label>
+          <label class="badge">Lng <input name="lng" type="number" step="0.000001" required style="width:120px"></label>
+        </div>
+        <label>Mutfaklar (virgülle)<br><input name="cuisines" placeholder="Kebap, Burger, ..."></label><br>
+
+        <div class="controls" style="padding:8px 0">
+          <label class="badge">Durum
+            <select name="status">
+              <option value="certified">Sertifikalı</option>
+              <option value="self-declared">İşletme Beyanı</option>
+              <option value="unknown">Bilinmiyor</option>
+              <option value="not-halal">Helal Değil</option>
+            </select>
+          </label>
+          <label class="badge">Kurum
+            <input name="body" list="certBodiesList" placeholder="DEMO-Halal">
+          </label>
+          <datalist id="certBodiesList"></datalist>
+          <label class="badge">Puan <input name="score" type="number" min="0" max="100" style="width:90px"></label>
+          <label class="badge">Doğrulama <input name="lastVerified" type="date" style="width:160px"></label>
+          <label class="badge">Sertifika No <input name="certNumber" placeholder="Ref/ID" style="width:160px"></label>
+          <label class="badge">Geçerlilik Başlangıcı <input name="validFrom" type="date" style="width:170px"></label>
+          <label class="badge">Geçerlilik Bitişi <input name="validTo" type="date" style="width:170px"></label>
+          <label class="badge">Sertifika URL <input name="certUrl" type="url" placeholder="https://..."></label>
+        </div>
+
+        <label>Web Sitesi<br><input name="website" placeholder="https://..."></label><br>
+        <label>Telefon<br><input name="phone" placeholder="+49..."></label><br>
+
+        <!-- Çalışma saatleri (JSON) -->
+        <label>Çalışma Saatleri (JSON)<br>
+          <textarea name="hours" rows="4" placeholder='{
   "mon":[["09:00","22:00"]],
   "tue":[["09:00","22:00"]],
   "wed":[["09:00","22:00"]],
@@ -90,86 +164,33 @@
   "sat":[["10:00","02:00"]],
   "sun":[["12:00","22:00"]]
 }'></textarea>
-</label>
-      <input type="hidden" name="id">
-      <label>Ad<br><input name="name" required></label><br>
-      <label>Adres<br><input name="address" placeholder="Cadde, No, Şehir"></label><br>
-      <div class="controls" style="padding:8px 0">
-        <label class="badge">Lat <input name="lat" type="number" step="0.000001" required style="width:120px"></label>
-        <label class="badge">Lng <input name="lng" type="number" step="0.000001" required style="width:120px"></label>
-      </div>
-      <label>Mutfaklar (virgülle)<br><input name="cuisines" placeholder="Kebap, Burger, ..."></label><br>
-      <div class="controls" style="padding:8px 0">
-        <label class="badge">Durum
-          <select name="status">
-            <option value="certified">Sertifikalı</option>
-            <option value="self-declared">İşletme Beyanı</option>
-            <option value="unknown">Bilinmiyor</option>
-            <option value="not-halal">Helal Değil</option>
-          </select>
         </label>
-        <label class="badge">Kurum
-          <input name="body" list="certBodiesList" placeholder="DEMO-Halal">
-        </label>
-        <datalist id="certBodiesList"></datalist>
-        <label class="badge">Puan <input name="score" type="number" min="0" max="100" style="width:90px"></label>
-        <label class="badge">Doğrulama <input name="lastVerified" type="date" style="width:160px"></label>
-        <label class="badge">Sertifika No <input name="certNumber" placeholder="Ref/ID" style="width:160px"></label>
-<label class="badge">Geçerlilik Başlangıcı <input name="validFrom" type="date" style="width:170px"></label>
-<label class="badge">Geçerlilik Bitişi <input name="validTo" type="date" style="width:170px"></label>
-<label class="badge">Sertifika URL <input name="certUrl" type="url" placeholder="https://..."></label>
 
-      </div>
-      <label>Web Sitesi<br><input name="website" placeholder="https://..."></label><br>
-      <label>Telefon<br><input name="phone" placeholder="+49..."></label><br>
-      <div class="controls">
-        <button class="btn" type="submit">Kaydet</button>
-        <button type="button" id="restFormCancel" class="btn" style="background:#4a5060">İptal</button>
-      </div>
-    </form>
-  </div>
+        <div class="controls">
+          <button class="btn" type="submit">Kaydet</button>
+          <button type="button" id="restFormCancel" class="btn" style="background:#4a5060">İptal</button>
+        </div>
+      </form>
+    </div>
+  </section>
 
-  <div class="card">
-    <h2 id="certSection">Sertifika Kurumları</h2>
-    <table id="adminCertTable" class="table">
-      <thead><tr><th>Ad</th><th>Kriter</th><th>Denetim</th><th>Puan</th><th>İşlem</th></tr></thead>
-      <tbody id="adminCertTableBody"></tbody>
+  <section class="container section card">
+    <h2>Kamuya Açık Sertifika Tablosu</h2>
+    <table class="table">
+      <thead><tr><th>Kurum</th><th>Kriter</th><th>Denetim</th><th>Puan</th></tr></thead>
+      <tbody id="certTable"></tbody>
     </table>
-    <div class="section"></div>
-    <h3>Ekle / Düzenle</h3>
-    <form id="certForm">
-      <input type="hidden" name="id">
-      <label>Ad (Kurum)<br><input name="body" required placeholder="DEMO-Halal"></label><br>
-      <label>Kriterler<br><input name="criteria" placeholder="Örn: Tedarik zinciri beyanı"></label><br>
-      <label>Denetim Sıklığı<br><input name="audit" placeholder="Örn: Yıllık yerinde denetim"></label><br>
-      <label>Puan (0–100)<br><input name="score" type="number" min="0" max="100" style="width:120px"></label><br>
-      <div class="controls">
-        <button class="btn" type="submit">Kaydet</button>
-        <button type="button" id="certFormCancel" class="btn" style="background:#4a5060">İptal</button>
-      </div>
-    </form>
-  </div>
-</section>
+  </section>
+</main>
 
-<section class="container section card">
-  <h2>Kamuya Açık Sertifika Tablosu</h2>
-  <table class="table">
-    <thead><tr><th>Kurum</th><th>Kriter</th><th>Denetim</th><th>Puan</th></tr></thead>
-    <tbody id="certTable"></tbody>
-  </table>
-</section>
-
-  </main>
-  <footer class="site-footer">
+<footer class="site-footer">
   <div class="container">
     <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
   </div>
 </footer>
-<script src="assets/app.js"></script>
 
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/env.js"></script>
+<script src="assets/app.js"></script>
+<!-- Head içinde supabase + env yüklendi; aşağıda sadece client ve admin js -->
 <script src="assets/supabaseClient.js"></script>
 <script src="assets/admin-supabase.js"></script>
 </body>
