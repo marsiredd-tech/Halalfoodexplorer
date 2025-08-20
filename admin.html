@@ -69,6 +69,18 @@
     <div class="section"></div>
     <h3>Ekle / Düzenle</h3>
     <form id="restForm">
+      <!-- admin.html → #restForm içinde, butonların üstüne EKLE -->
+<label>Çalışma Saatleri (JSON)<br>
+  <textarea name="hours" rows="4" placeholder='{
+  "mon":[["09:00","22:00"]],
+  "tue":[["09:00","22:00"]],
+  "wed":[["09:00","22:00"]],
+  "thu":[["09:00","22:00"]],
+  "fri":[["09:00","23:30"]],
+  "sat":[["10:00","02:00"]],
+  "sun":[["12:00","22:00"]]
+}'></textarea>
+</label>
       <input type="hidden" name="id">
       <label>Ad<br><input name="name" required></label><br>
       <label>Adres<br><input name="address" placeholder="Cadde, No, Şehir"></label><br>
