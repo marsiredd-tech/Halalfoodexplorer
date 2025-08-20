@@ -48,6 +48,15 @@
     <span class="badge">Yarıçap: <strong id="radiusLabel">5</strong> km</span> <input id="radiusKm" type="range" min="1" max="15" step="1" value="5" style="width:160px"/>
     <label class="badge"><input id="onlyCertified" type="checkbox"/> Yalnızca sertifikalı</label>
     <label class="badge">Mutfak
+    <label class="badge">Sırala
+  <select id="sortBy">
+    <option value="distance-asc">Uzaklık (yakından → uzağa)</option>
+    <option value="distance-desc">Uzaklık (uzaktan → yakına)</option>
+    <option value="score-desc">Güvenilirlik (yüksek → düşük)</option>
+    <option value="name-asc">İsme göre (A→Z)</option>
+  </select>
+</label>
+
   <select id="cuisineFilter"><option value="">Hepsi</option></select>
 </label>
 
@@ -59,7 +68,7 @@
   <div class="card"><div id="map" role="region" aria-label="Harita"></div></div>
   <div class="card">
     <h2>Sonuçlar</h2>
-    <div id="resultStats" class="muted">Henüz arama yapılmadı.</div>
+    <div id="resultStats" role="status" aria-live="polite"></div>
     <div id="list" class="list"></div>
   </div>
 </section>
