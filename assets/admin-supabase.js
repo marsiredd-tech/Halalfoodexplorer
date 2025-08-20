@@ -10,6 +10,20 @@ const ADMIN = (function(){
     search: ''
   };
 
+  // ---- İstemci tarafı website normalizasyonu (sunucudaki trigger yine kalsın) ----
+  function normalizeWeb(u){
+    if(!u) return null;
+    u = String(u).trim();
+    if(!u) return null;
+    // e-posta yanlışlıkla website alanına yazılmışsa null yap
+    if(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(u)) return null;
+    if(/^www\./i.test(u)) return 'https://' + u;
+    if(!/^https?:\/\//i.test(u) && /^[A-Za-z0-9][A-Za-z0-9.-]+\.[A-Za-z]{2,}([/?#].*)?$/.test(u)){
+      return 'https://' + u;
+    }
+    return u;
+  }
+
   async function requireAuth(){
     const { data: { session: s } } = await sb.auth.getSession();
     session = s;
@@ -80,13 +94,13 @@ const ADMIN = (function(){
     const to   = from + pageSize - 1;
 
     let q = sb.from('restaurants')
-      .select('id,name,address,cuisines,website,phone,coords', { count: 'exact' })
+      .select('id,name,address,cuisines,website,contact_email,phone,coords', { count: 'exact' })
       .order('name', { ascending: true });
 
     if(search && search.trim()){
       const term = `%${search.trim()}%`;
-      // name OR address OR website içinde arama
-      q = q.or(`name.ilike.${term},address.ilike.${term},website.ilike.${term}`);
+      // name OR address OR website OR contact_email içinde arama
+      q = q.or(`name.ilike.${term},address.ilike.${term},website.ilike.${term},contact_email.ilike.${term}`);
     }
 
     const { data, error, count } = await q.range(from, to);
@@ -123,13 +137,15 @@ const ADMIN = (function(){
     const shownTo = Math.min(total, to + 1);
     const shownFrom = total ? (from + 1) : 0;
 
-    infoEl.textContent = total
-      ? `${shownFrom}–${shownTo} / ${total} — Sayfa ${restPager.page}`
-      : `0 sonuç`;
+    if(infoEl){
+      infoEl.textContent = total
+        ? `${shownFrom}–${shownTo} / ${total} — Sayfa ${restPager.page}`
+        : `0 sonuç`;
+    }
 
-    prevBtn.disabled = restPager.page <= 1;
+    if(prevBtn) prevBtn.disabled = restPager.page <= 1;
     const maxPage = Math.max(1, Math.ceil((total||0)/restPager.pageSize));
-    nextBtn.disabled = restPager.page >= maxPage;
+    if(nextBtn) nextBtn.disabled = restPager.page >= maxPage;
   }
 
   function bindPager(){
@@ -259,8 +275,15 @@ const ADMIN = (function(){
       const id = fd.get('id') || null;
       const name = fd.get('name');
       const address = fd.get('address');
-      const website = fd.get('website');
+      const website = normalizeWeb(fd.get('website'));
       const phone = fd.get('phone');
+
+      // e-posta (zorunlu değil ama format kontrolü yapalım)
+      let contact_email = (fd.get('contact_email')||'').toString().trim().toLowerCase();
+      if (contact_email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(contact_email)) {
+        alert('E-posta formatı geçersiz.');
+        return;
+      }
 
       const lat = parseFloat(fd.get('lat'));
       const lng = parseFloat(fd.get('lng'));
@@ -285,7 +308,7 @@ const ADMIN = (function(){
       // --- çalışma saatleri (opsiyonel)
       const hoursRaw = fd.get('hours');
       let hours = null;
-      if (hoursRaw && hoursRaw.trim()) {
+      if (hoursRaw && String(hoursRaw).trim()) {
         try { hours = JSON.parse(hoursRaw); }
         catch(e){ alert('Saatler JSON geçersiz: '+e.message); return; }
       }
@@ -293,7 +316,7 @@ const ADMIN = (function(){
       // Upsert restaurant
       let res;
       const payloadRest = {
-        name, address, website, phone, cuisines,
+        name, address, website, contact_email, phone, cuisines,
         coords: `SRID=4326;POINT(${lng} ${lat})`,
         hours
       };
@@ -333,7 +356,7 @@ const ADMIN = (function(){
     window.fillRestForm = async function(id){
       const { data: rds, error } = await sb
         .from('restaurants')
-        .select('id,name,address,website,phone,cuisines,coords,hours')
+        .select('id,name,address,website,contact_email,phone,cuisines,coords,hours')
         .eq('id', id).single();
       if(error){ alert(error.message); return; }
 
@@ -357,6 +380,7 @@ const ADMIN = (function(){
       f.elements['lng'].value      = lng ?? '';
       f.elements['cuisines'].value = (rds.cuisines||[]).join(', ');
       f.elements['website'].value  = rds.website||'';
+      f.elements['contact_email'].value = rds.contact_email||'';
       f.elements['phone'].value    = rds.phone||'';
 
       if (f.elements['hours']) {
