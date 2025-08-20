@@ -26,7 +26,7 @@
         <a href="certifications.html">Sertifikalar</a>
         <a href="news.html">Haberler</a>
         <a href="about.html">Hakkımızda</a>
-        <a href="contact.html">İletişim</a>
+        <a href="contact.html" class="active">İletişim</a>
         <a href="impressum.html">Impressum</a>
         <a href="datenschutz.html">Datenschutz</a>
         <a href="admin.html" class="admin-link">Admin</a>
@@ -37,17 +37,17 @@
   <main id="icerik">
     <section class="container hero">
       <h1>İletişim</h1>
-      <p class="muted">Bir öneriniz veya işletme ekleme talebiniz mi var?</p>
+      <p class="muted">Bir öneriniz veya işletme ekleme talebiniz mi var? Formu doldurun, size dönüş yapalım.</p>
     </section>
 
     <section class="container section card">
-      <!-- Netlify Forms: mailto yerine POST + data-netlify -->
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <!-- Netlify'in formu tanıması için gerekli -->
+      <!-- Netlify Forms ile uyumlu form -->
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="thanks.html">
+        <!-- Netlify'in formu tanıması için gerekli gizli alan -->
         <input type="hidden" name="form-name" value="contact" />
 
         <!-- Honeypot (spamlere karşı) -->
-        <p class="hidden" style="position:absolute;left:-9999px;opacity:0;">
+        <p style="position:absolute;left:-9999px;opacity:0;">
           <label>Bot değil misin? <input name="bot-field" /></label>
         </p>
 
@@ -59,15 +59,19 @@
           <input type="email" name="email" placeholder="mail@ornek.com" required />
         </label><br>
 
+        <label>Konu<br>
+          <input name="konu" placeholder="Kısa konu başlığı" />
+        </label><br>
+
         <label>Mesaj<br>
-          <textarea name="mesaj" rows="5" placeholder="Merhaba..." required></textarea>
+          <textarea name="mesaj" rows="6" placeholder="Merhaba..." required></textarea>
         </label><br>
 
         <button class="btn" type="submit">Gönder</button>
       </form>
 
       <p class="muted small">
-        Form gönderimleriniz Netlify Forms üzerinden toplanır. Netlify panelinizde “Forms” bölümünden görüntüleyebilirsiniz.
+        Gönderimler Netlify Forms üzerinden toplanır. Netlify panelinizde “Forms” bölümünden yönetebilirsiniz.
       </p>
     </section>
   </main>
