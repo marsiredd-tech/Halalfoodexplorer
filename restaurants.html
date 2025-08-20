@@ -3,22 +3,30 @@
 <head>
   <title>Restoran Bul — HelalRestoran</title>
   <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
-<meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
-<meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
-<meta property="og:type" content="website" />
-<meta property="og:locale" content="tr_TR" />
-<link rel="icon" href="assets/logo.svg" />
-<link rel="stylesheet" href="assets/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
+  <meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
+  <meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="tr_TR" />
+  <link rel="icon" href="assets/logo.svg" />
+  <link rel="stylesheet" href="assets/styles.css" />
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <!-- Leaflet (harita) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- (İsteğe bağlı) Marker Clustering: çok pin olduğunda kümeler -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/env.js"></script>
-  <script src="assets/supabaseClient.js"></script>
 </head>
 <body>
-  <header class="site-header">
+<header class="site-header">
   <a class="skip" href="#icerik">İçeriğe atla</a>
   <div class="container nav">
     <div class="brand">
@@ -27,7 +35,7 @@
     </div>
     <nav class="menu" aria-label="Ana menü">
       <a href="index.html">Anasayfa</a>
-      <a href="restaurants.html">Restoran Bul</a>
+      <a href="restaurants.html" aria-current="page">Restoran Bul</a>
       <a href="certifications.html">Sertifikalar</a>
       <a href="news.html">Haberler</a>
       <a href="about.html">Hakkımızda</a>
@@ -39,51 +47,67 @@
   </div>
 </header>
 
-  <main id="icerik">
-    <section class="container hero">
-  <h1>Restoran Bul</h1>
-  <p class="muted">Yukarıdan “Find your restaurant” butonuna basarak konumunu paylaş, çevrendeki seçenekleri gör.</p>
-  <div class="controls">
-    <button id="btnFind" class="btn">Find your restaurant</button>
-    <span class="badge">Yarıçap: <strong id="radiusLabel">5</strong> km</span> <input id="radiusKm" type="range" min="1" max="15" step="1" value="5" style="width:160px"/>
-    <label class="badge"><input id="onlyCertified" type="checkbox"/> Yalnızca sertifikalı</label>
-    <label class="badge">Mutfak
-    <label class="badge">Sırala
-  <select id="sortBy">
-    <option value="distance-asc">Uzaklık (yakından → uzağa)</option>
-    <option value="distance-desc">Uzaklık (uzaktan → yakına)</option>
-    <option value="score-desc">Güvenilirlik (yüksek → düşük)</option>
-    <option value="name-asc">İsme göre (A→Z)</option>
-  </select>
-</label>
+<main id="icerik">
+  <section class="container hero">
+    <h1>Yakınındaki Helal Restoranları Bul</h1>
+    <p class="muted">“Restoran bul” düğmesine bas veya adres yazarak konum seç.</p>
+    <div class="controls" style="flex-wrap:wrap;gap:8px">
+      <button class="btn" id="btnFind" type="button">Restoran bul</button>
 
-  <select id="cuisineFilter"><option value="">Hepsi</option></select>
-</label>
+      <label class="badge">Yarıçap: <span id="radiusLabel">5</span> km
+        <input id="radiusKm" type="range" min="1" max="25" step="1" value="5" />
+      </label>
 
-    <span id="status" class="muted"></span>
-  </div>
-</section>
+      <label class="badge"><input id="onlyCertified" type="checkbox"> Sadece sertifikalı</label>
 
-<section class="container section grid grid-2">
-  <div class="card"><div id="map" role="region" aria-label="Harita"></div></div>
-  <div class="card">
-    <h2>Sonuçlar</h2>
-    <div id="resultStats" role="status" aria-live="polite"></div>
-    <div id="list" class="list"></div>
-  </div>
-</section>
+      <label class="badge">Kurum
+        <select id="certBodyFilter"><option value="">Hepsi</option></select>
+      </label>
 
-  </main>
-  <footer class="site-footer">
+      <label class="badge">Mutfak
+        <select id="cuisineFilter"><option value="">Hepsi</option></select>
+      </label>
+
+      <label class="badge">Sırala
+        <select id="sortBy">
+          <option value="distance-asc">Uzaklık (yakın → uzak)</option>
+          <option value="distance-desc">Uzaklık (uzak → yakın)</option>
+          <option value="score-desc">Güvenilirlik (yüksek → düşük)</option>
+          <option value="name-asc">İsme göre (A→Z)</option>
+        </select>
+      </label>
+
+      <!-- Adresle arama (opsiyonel ama önerilir) -->
+      <label class="badge">Adres
+        <input id="addressInput" placeholder="Örn: Alexanderplatz Berlin">
+      </label>
+      <button class="btn" id="btnGeocode" type="button">Adrese git</button>
+
+      <span id="status" class="muted small" style="min-width:160px"></span>
+    </div>
+  </section>
+
+  <section class="container section grid">
+    <div class="card" style="min-height:420px">
+      <div id="map" style="width:100%;height:420px;border-radius:16px;"></div>
+    </div>
+
+    <div class="card">
+      <div id="resultStats" role="status" aria-live="polite" class="muted small" style="margin-bottom:8px"></div>
+      <div id="list" class="list"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
   <div class="container">
     <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
   </div>
 </footer>
-<script src="assets/app.js"></script>
 
-  
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<!-- Uygulama scriptleri -->
+<script src="assets/supabaseClient.js"></script>
 <script src="assets/map-supabase.js"></script>
-
+<script src="assets/app.js"></script>
 </body>
 </html>
