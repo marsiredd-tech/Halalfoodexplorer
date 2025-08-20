@@ -53,7 +53,6 @@
   </div>
 </header>
 
-
 <main id="icerik">
   <section class="container hero">
     <h1>Admin Panel</h1>
@@ -75,13 +74,14 @@
   </section>
 
   <section class="container section grid grid-2 requires-auth" style="display:none">
+    <!-- Restoran listesi -->
     <div class="card">
       <h2 id="restSection">Restoranlar</h2>
 
       <!-- Arama + sayfalama kontrolleri -->
       <div class="controls" style="gap:8px; align-items:center; margin:8px 0;">
         <label class="badge">Ara
-          <input id="restSearch" placeholder="Ad, adres veya website" style="min-width:260px">
+          <input id="restSearch" placeholder="Ad, adres, website veya e-posta" style="min-width:260px">
         </label>
         <label class="badge">Sayfa boyutu
           <select id="restPageSize">
@@ -91,26 +91,29 @@
             <option>100</option>
           </select>
         </label>
-        <span class="muted small" id="restPageInfo"></span>
+        <span class="muted small" id="restPageInfo" aria-live="polite"></span>
         <span style="flex:1"></span>
-        <button class="btn" id="restPrev" type="button">◀ Önceki</button>
-        <button class="btn" id="restNext" type="button">Sonraki ▶</button>
+        <button class="btn" id="restPrev" type="button" aria-label="Önceki sayfa">◀ Önceki</button>
+        <button class="btn" id="restNext" type="button" aria-label="Sonraki sayfa">Sonraki ▶</button>
       </div>
 
-      <table id="adminRestTable" class="table">
-        <thead><tr><th>Ad</th><th>Koordinat</th><th>Adres</th><th>İşlem</th></tr></thead>
-        <tbody id="adminRestTableBody"></tbody>
-      </table>
-
-      <!-- (Aynı kontrolleri altta da göstermek istersen kopyalayabilirsin) -->
+      <div class="table-wrap">
+        <table id="adminRestTable" class="table">
+          <thead><tr><th>Ad</th><th>Koordinat</th><th>Adres</th><th>İşlem</th></tr></thead>
+          <tbody id="adminRestTableBody"></tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- Sertifika kurumları -->
     <div class="card">
       <h2 id="certSection">Sertifika Kurumları</h2>
-      <table id="adminCertTable" class="table">
-        <thead><tr><th>Ad</th><th>Kriter</th><th>Denetim</th><th>Puan</th><th>İşlem</th></tr></thead>
-        <tbody id="adminCertTableBody"></tbody>
-      </table>
+      <div class="table-wrap">
+        <table id="adminCertTable" class="table">
+          <thead><tr><th>Ad</th><th>Kriter</th><th>Denetim</th><th>Puan</th><th>İşlem</th></tr></thead>
+          <tbody id="adminCertTableBody"></tbody>
+        </table>
+      </div>
       <div class="section"></div>
       <h3>Ekle / Düzenle</h3>
       <form id="certForm">
@@ -126,19 +129,23 @@
       </form>
     </div>
 
+    <!-- Restoran ekle/düzenle -->
     <div class="card">
       <h3>Ekle / Düzenle (Restoran)</h3>
       <form id="restForm">
         <input type="hidden" name="id">
+
         <label>Ad<br><input name="name" required></label><br>
         <label>Adres<br><input name="address" placeholder="Cadde, No, Şehir"></label><br>
+
         <div class="controls" style="padding:8px 0">
           <label class="badge">Lat <input name="lat" type="number" step="0.000001" required style="width:120px"></label>
           <label class="badge">Lng <input name="lng" type="number" step="0.000001" required style="width:120px"></label>
         </div>
+
         <label>E-posta<br>
-  <input name="contact_email" type="email" inputmode="email" placeholder="mail@ornek.com">
-</label><br>
+          <input name="contact_email" type="email" inputmode="email" placeholder="mail@ornek.com">
+        </label><br>
 
         <label>Mutfaklar (virgülle)<br><input name="cuisines" placeholder="Kebap, Burger, ..."></label><br>
 
@@ -151,10 +158,12 @@
               <option value="not-halal">Helal Değil</option>
             </select>
           </label>
+
           <label class="badge">Kurum
             <input name="body" list="certBodiesList" placeholder="DEMO-Halal">
           </label>
           <datalist id="certBodiesList"></datalist>
+
           <label class="badge">Puan <input name="score" type="number" min="0" max="100" style="width:90px"></label>
           <label class="badge">Doğrulama <input name="lastVerified" type="date" style="width:160px"></label>
           <label class="badge">Sertifika No <input name="certNumber" placeholder="Ref/ID" style="width:160px"></label>
@@ -163,8 +172,8 @@
           <label class="badge">Sertifika URL <input name="certUrl" type="url" placeholder="https://..."></label>
         </div>
 
-        <label>Web Sitesi<br><input name="website" placeholder="https://..."></label><br>
-        <label>Telefon<br><input name="phone" placeholder="+49..."></label><br>
+        <label>Web Sitesi<br><input name="website" type="url" placeholder="https://..."></label><br>
+        <label>Telefon<br><input name="phone" inputmode="tel" placeholder="+49..."></label><br>
 
         <!-- Çalışma saatleri (JSON) -->
         <label>Çalışma Saatleri (JSON)<br>
@@ -189,10 +198,12 @@
 
   <section class="container section card">
     <h2>Kamuya Açık Sertifika Tablosu</h2>
-    <table class="table">
-      <thead><tr><th>Kurum</th><th>Kriter</th><th>Denetim</th><th>Puan</th></tr></thead>
-      <tbody id="certTable"></tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Kurum</th><th>Kriter</th><th>Denetim</th><th>Puan</th></tr></thead>
+        <tbody id="certTable"></tbody>
+      </table>
+    </div>
   </section>
 </main>
 
