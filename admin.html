@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <title>Admin — HelalRestoran</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
+<meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
+<meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="tr_TR" />
+<link rel="icon" href="assets/logo.svg" />
+<link rel="stylesheet" href="assets/styles.css" />
+
+  
+</head>
+<body>
+  <header class="site-header">
+  <a class="skip" href="#icerik">İçeriğe atla</a>
+  <div class="container nav">
+    <div class="brand">
+      <img src="assets/logo.svg" alt="HelalRestoran logo" width="28" height="28" />
+      <span>HelalRestoran</span>
+    </div>
+    <nav class="menu" aria-label="Ana menü">
+      <a href="index.html">Anasayfa</a>
+      <a href="restaurants.html">Restoran Bul</a>
+      <a href="certifications.html">Sertifikalar</a>
+      <a href="news.html">Haberler</a>
+      <a href="about.html">Hakkımızda</a>
+      <a href="contact.html">İletişim</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="admin.html" class="admin-link">Admin</a>
+    </nav>
+  </div>
+</header>
+
+  <main id="icerik">
+    <section class="container hero">
+  <h1>Admin Panel</h1>
+  <div id="authBox" class="card" style="display:none">
+    <h2>Giriş</h2>
+    <p class="muted">Email/şifre ile giriş yapın. Bu emaili <code>admins</code> tablosuna eklemeden yazma izinleriniz olmayacaktır.</p>
+    <form id="signInForm" class="controls" style="flex-direction:column;align-items:flex-start">
+      <label>Email<br><input id="email" name="email" type="email" required placeholder="you@example.com"></label>
+      <label>Password<br><input id="password" name="password" type="password" required></label>
+      <div class="controls">
+        <button class="btn" type="submit">Sign in</button>
+        <button class="btn" type="button" id="signUpBtn" style="background:#4a5060">Sign up</button>
+      </div>
+    </form>
+  </div>
+  <div id="adminBox" style="display:none">
+    <p class="muted">Giriş yapıldı: <span id="whoami"></span> · <button class="btn" id="signOutBtn" style="background:#4a5060">Sign out</button></p>
+  </div>
+
+  <h1>Admin Panel</h1>
+  <p class="muted">Bu panel demo içindir; veriler <strong>localStorage</strong>'a kaydedilir. Canlıda Auth + veritabanı kullanın.</p>
+  <div class="controls">
+    <button class="btn" id="btnExport">JSON Dışa Aktar</button>
+    <label class="badge">JSON İçe Aktar <input type="file" id="inputImport" accept="application/json"></label>
+    <button class="btn" id="btnReset">Demo Verisine Sıfırla</button>
+  </div>
+</section>
+
+<section class="container section grid grid-2">
+  <div class="card">
+    <h2 id="restSection">Restoranlar</h2>
+    <table id="adminRestTable" class="table">
+      <thead><tr><th>Ad</th><th>Koordinat</th><th>Sertifika</th><th>Puan</th><th>İşlem</th></tr></thead>
+      <tbody id="adminRestTableBody"></tbody>
+    </table>
+    <div class="section"></div>
+    <h3>Ekle / Düzenle</h3>
+    <form id="restForm">
+      <input type="hidden" name="id">
+      <label>Ad<br><input name="name" required></label><br>
+      <label>Adres<br><input name="address" placeholder="Cadde, No, Şehir"></label><br>
+      <div class="controls" style="padding:8px 0">
+        <label class="badge">Lat <input name="lat" type="number" step="0.000001" required style="width:120px"></label>
+        <label class="badge">Lng <input name="lng" type="number" step="0.000001" required style="width:120px"></label>
+      </div>
+      <label>Mutfaklar (virgülle)<br><input name="cuisines" placeholder="Kebap, Burger, ..."></label><br>
+      <div class="controls" style="padding:8px 0">
+        <label class="badge">Durum
+          <select name="status">
+            <option value="certified">Sertifikalı</option>
+            <option value="self-declared">İşletme Beyanı</option>
+            <option value="unknown">Bilinmiyor</option>
+            <option value="not-halal">Helal Değil</option>
+          </select>
+        </label>
+        <label class="badge">Kurum
+          <input name="body" list="certBodiesList" placeholder="DEMO-Halal">
+        </label>
+        <datalist id="certBodiesList"></datalist>
+        <label class="badge">Puan <input name="score" type="number" min="0" max="100" style="width:90px"></label>
+        <label class="badge">Doğrulama <input name="lastVerified" type="date" style="width:160px"></label>
+      </div>
+      <label>Web Sitesi<br><input name="website" placeholder="https://..."></label><br>
+      <label>Telefon<br><input name="phone" placeholder="+49..."></label><br>
+      <div class="controls">
+        <button class="btn" type="submit">Kaydet</button>
+        <button type="button" id="restFormCancel" class="btn" style="background:#4a5060">İptal</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 id="certSection">Sertifika Kurumları</h2>
+    <table id="adminCertTable" class="table">
+      <thead><tr><th>Ad</th><th>Kriter</th><th>Denetim</th><th>Puan</th><th>İşlem</th></tr></thead>
+      <tbody id="adminCertTableBody"></tbody>
+    </table>
+    <div class="section"></div>
+    <h3>Ekle / Düzenle</h3>
+    <form id="certForm">
+      <input type="hidden" name="id">
+      <label>Ad (Kurum)<br><input name="body" required placeholder="DEMO-Halal"></label><br>
+      <label>Kriterler<br><input name="criteria" placeholder="Örn: Tedarik zinciri beyanı"></label><br>
+      <label>Denetim Sıklığı<br><input name="audit" placeholder="Örn: Yıllık yerinde denetim"></label><br>
+      <label>Puan (0–100)<br><input name="score" type="number" min="0" max="100" style="width:120px"></label><br>
+      <div class="controls">
+        <button class="btn" type="submit">Kaydet</button>
+        <button type="button" id="certFormCancel" class="btn" style="background:#4a5060">İptal</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="container section card">
+  <h2>Kamuya Açık Sertifika Tablosu</h2>
+  <table class="table">
+    <thead><tr><th>Kurum</th><th>Kriter</th><th>Denetim</th><th>Puan</th></tr></thead>
+    <tbody id="certTable"></tbody>
+  </table>
+</section>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+  </div>
+</footer>
+<script src="assets/app.js"></script>
+
+  <script src="assets/admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/env.js"></script>
+<script src="assets/supabaseClient.js"></script>
+<script src="assets/admin-supabase.js"></script>
+</body>
+</html>

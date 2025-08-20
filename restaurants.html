@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <title>Restoran Bul — HelalRestoran</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Konumuna en yakın helal restoranları haritada bul, sertifikaları ve güvenilirlik puanlarını gör." />
+<meta property="og:title" content="HelalRestoran — Yakınındaki Helal Mekânları Bul" />
+<meta property="og:description" content="HelalRestoran, kullanıcıların konumuna göre helal restoranları bulmasına yardımcı olur." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="tr_TR" />
+<link rel="icon" href="assets/logo.svg" />
+<link rel="stylesheet" href="assets/styles.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/env.js"></script>
+  <script src="assets/supabaseClient.js"></script>
+</head>
+<body>
+  <header class="site-header">
+  <a class="skip" href="#icerik">İçeriğe atla</a>
+  <div class="container nav">
+    <div class="brand">
+      <img src="assets/logo.svg" alt="HelalRestoran logo" width="28" height="28" />
+      <span>HelalRestoran</span>
+    </div>
+    <nav class="menu" aria-label="Ana menü">
+      <a href="index.html">Anasayfa</a>
+      <a href="restaurants.html">Restoran Bul</a>
+      <a href="certifications.html">Sertifikalar</a>
+      <a href="news.html">Haberler</a>
+      <a href="about.html">Hakkımızda</a>
+      <a href="contact.html">İletişim</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="admin.html" class="admin-link">Admin</a>
+    </nav>
+  </div>
+</header>
+
+  <main id="icerik">
+    <section class="container hero">
+  <h1>Restoran Bul</h1>
+  <p class="muted">Yukarıdan “Find your restaurant” butonuna basarak konumunu paylaş, çevrendeki seçenekleri gör.</p>
+  <div class="controls">
+    <button id="btnFind" class="btn">Find your restaurant</button>
+    <span class="badge">Yarıçap: <strong id="radiusLabel">5</strong> km</span> <input id="radiusKm" type="range" min="1" max="15" step="1" value="5" style="width:160px"/>
+    <label class="badge"><input id="onlyCertified" type="checkbox"/> Yalnızca sertifikalı</label>
+    <span id="status" class="muted"></span>
+  </div>
+</section>
+
+<section class="container section grid grid-2">
+  <div class="card"><div id="map" role="region" aria-label="Harita"></div></div>
+  <div class="card">
+    <h2>Sonuçlar</h2>
+    <div id="resultStats" class="muted">Henüz arama yapılmadı.</div>
+    <div id="list" class="list"></div>
+  </div>
+</section>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2025 HelalRestoran · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+  </div>
+</footer>
+<script src="assets/app.js"></script>
+
+  
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="assets/map-supabase.js"></script>
+
+</body>
+</html>
